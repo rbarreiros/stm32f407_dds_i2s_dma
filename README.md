@@ -1,2 +1,4 @@
-# stm32f407_dds_i2s_dma
-DDS generator using I2S and DAC
+DDS generator using the STM32f4xxx I2S and PCM5102A
+---
+
+

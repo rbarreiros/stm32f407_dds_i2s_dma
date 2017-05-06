@@ -1,0 +1,15 @@
+# eclipse project files
+*.cproject
+*.pydevproject
+*.project
+*.settings
+
+# sublime project files
+*.sublime-project
+*.sublime-workspace
+
+# visual studio project files
+*.vcxproj*
+
+build-*
+
