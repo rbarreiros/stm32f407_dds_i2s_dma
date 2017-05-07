@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(dds_dac)
+project(dds_i2s_dma)
 
 set(COMPILER_OPTIONS "-Wall -Werror")
 set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   ${COMPILER_OPTIONS} -std=c11")

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(dds_dac_source)
+project(dds_i2s_dma)
 
 set(PP_DEFINES " -DSTM32 -DSTM32F4 -DSTM32F407ZETx -DSTM32F40_41xxx -DSTM32F40XX -DUSE_STDPERIPH_DRIVER")
 
