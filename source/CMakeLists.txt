@@ -9,6 +9,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMPILER_OPTIONS} -std=c++11")
 # shared libraries
 add_subdirectory(libs)
 
+# Resolve the issue with Eclipse's indexer and C/C++ mixed source files
+include(../cmake/language_provider.cmake)
+remove_from_SYSTEM_MACROS(CXX "__cplusplus;.*;")
+create_language_provider("${CMAKE_BINARY_DIR}/.settings" "${GCC_PREFIX}-" "${CXX_STANDARD_FLAG}")
+
 # force stm builds to debug.  This is a hack as when release is set, it automatically 
 # sets the invalid -O3 flag on the assembler.
 set(CMAKE_BUILD_TYPE Debug)
