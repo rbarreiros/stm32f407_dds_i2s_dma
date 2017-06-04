@@ -21,9 +21,13 @@ tp_glb glb = {0};
 
 void cmd_handler(uint8_t *buffer, size_t bufferlen, uint8_t sender)
 {
-	if (!strncmp((char*)buffer, "FREQ=", 5)) {
-		glb.dds_freq = strtof((char*) &buffer[5], NULL);
-		TRACE(("Set DDS frequency to: %f\n", glb.dds_freq));
+	if (!strncmp((char*)buffer, "FREQ=L,", 7)) {
+		glb.dds_freq_L = strtof((char*) &buffer[7], NULL);
+		TRACE(("Set Left-ch DDS frequency to: %f\n", glb.dds_freq_L));
+	}
+	else if (!strncmp((char*)buffer, "FREQ=R,", 7)) {
+		glb.dds_freq_R = strtof((char*) &buffer[7], NULL);
+		TRACE(("Set Right-ch DDS frequency to: %f\n", glb.dds_freq_R));
 	}
 }
 
@@ -50,7 +54,8 @@ int main(void)
 	debug_uart_init(USART1, 115200, glb.uart_rx_buff, UART_RX_BUFF_SIZE, glb.uart_tx_buff, UART_TX_BUFF_SIZE, &cmd_handler);
 	debug_uart_set_trace_level(TRACE_LEVEL_DEFAULT, 1);
 
-	glb.dds_freq = 1000;
+	glb.dds_freq_L = 1000;
+	glb.dds_freq_R = 2000;
 
 	/* Configure DACs */
 	DDS_Init();

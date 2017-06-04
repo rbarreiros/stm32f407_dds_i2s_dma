@@ -84,7 +84,10 @@ typedef struct {
 	uint8_t sys_led_pattern_index;
 	uint32_t trace_level;
 
-	float		dds_freq;
+	float		dds_freq_L;
+	float		dds_freq_R;
+	uint32_t	phaseAccumulator_L;
+	uint32_t	phaseAccumulator_R;
 } tp_glb;
 
 extern tp_glb glb;

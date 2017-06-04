@@ -95,12 +95,16 @@ void DMA1_Stream7_IRQHandler(void)
 		{
 			PIN_DEBUG_PORT->ODR |= PIN_DEBUG1;
 			/* calculate new buffer 0, while buffer 1 is transmitting */
-			DDS_calculate(DMATRMBUF_1, DMATRMBUF_SIZE, glb.dds_freq);
+			DDS_calculate(DMATRMBUF_1, DMATRMBUF_SIZE,
+					&glb.phaseAccumulator_L, glb.dds_freq_L,
+					&glb.phaseAccumulator_R, glb.dds_freq_R);
 		}
 		else {
 			PIN_DEBUG_PORT->ODR &= ~PIN_DEBUG1;
 			/* calculate new buffer 0, while buffer 0 is transmitting */
-			DDS_calculate(DMATRMBUF_0, DMATRMBUF_SIZE, glb.dds_freq);
+			DDS_calculate(DMATRMBUF_0, DMATRMBUF_SIZE,
+					&glb.phaseAccumulator_L, glb.dds_freq_L,
+					&glb.phaseAccumulator_R, glb.dds_freq_R);
 		}
 	}
 }

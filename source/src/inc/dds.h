@@ -12,6 +12,8 @@
 #include "i2s.h"
 
 void DDS_Init(void);
-void DDS_calculate(dmabuf_t * buffer, uint16_t buffer_size, float frequency);
+void DDS_calculate(dmabuf_t * buffer, uint16_t buffer_size,
+					uint32_t * phaseAccumulator_L, float frequency_L,
+					uint32_t * phaseAccumulator_R, float frequency_R);
 
 #endif /* SYNTH_SYNTH_H_ */

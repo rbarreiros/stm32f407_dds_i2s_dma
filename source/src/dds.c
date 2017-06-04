@@ -47,45 +47,44 @@ void DDS_Init(void)
 	DDS_sine_init();
 }
 
-void DDS_calculate(dmabuf_t * buffer, uint16_t buffer_size, float frequency)
+inline float DDS_calculate_channel_out(uint32_t * phaseAccumulator, uint32_t phaseIncrement, uint32_t index)
 {
-	uint32_t phaseIncrement = Q16((float)frequency*TABLE_SIZE / SAMPLE_RATE);
-	uint32_t index = 0;
+	/* Increment the phase accumulator */
+	*phaseAccumulator += phaseIncrement;
+	*phaseAccumulator &= TABLE_SIZE*(1<<16) - 1;
+	index = *phaseAccumulator >> 16;
+
+	/* interpolation */
+	float v1 = sine[index];
+	float v2 = sine[index+1];
+	float fmul = (*phaseAccumulator & 65535)/65536.0f;
+//		float fmul = fix32_frac(phaseAccumulator, 16);
+	float out = v1 + (v2-v1)*fmul;
+
+	out = out * 32768.0f;
+	if (out > 32767) out = 32767;
+	if (out < -32768) out = -32768;
+
+	return(out);
+}
+
+
+void DDS_calculate(dmabuf_t * buffer, uint16_t buffer_size,
+					uint32_t * phaseAccumulator_L, float frequency_L,
+					uint32_t * phaseAccumulator_R, float frequency_R)
+{
+	uint32_t index_L = 0;
+	uint32_t index_R = 0;
+
+	uint32_t phaseIncrement_L = Q16((float)frequency_L*TABLE_SIZE / SAMPLE_RATE);
+	uint32_t phaseIncrement_R = Q16((float)frequency_R*TABLE_SIZE / SAMPLE_RATE);
 	int i = 0;
 
 	for(i=0; i<buffer_size; i++)
     {
-//		phaseAccumulator += 1;
-//		buffer[i].LEFT.W16 = -32768; //phaseAccumulator & 0x3FFF; //65535;
-//		buffer[i].RIGHT.W16 = 32767; //phaseAccumulator & 1023; //65535;
-
-		/* Increment the phase accumulator */
-		phaseAccumulator += phaseIncrement;
-
-		phaseAccumulator &= TABLE_SIZE*(1<<16) - 1;
-
-		index = phaseAccumulator >> 16;
-
-		/* interpolation */
-		float v1 = sine[index];
-		float v2 = sine[index+1];
-		float fmul = (phaseAccumulator & 65535)/65536.0f;
-//		float fmul = fix32_frac(phaseAccumulator, 16);
-		float out = v1 + (v2-v1)*fmul;
-
-		out = out * 32768.0f;
-		if (out > 32767) out = 32767;
-		if (out < -32768) out = -32768;
-
-//		uint16_t out_i = out;
-
-//		buffer[i].LEFT.W16 = (uint16_t)(65536 * out);
-//		buffer[i].RIGHT.W16 = (uint16_t)(65536 * out);uint16_t out_i = out;
-
-//		buffer[i].LEFT.W16 = ((out_i & 0xFF00) >> 8) | ((out_i & 0xFF) << 8);
-//		buffer[i].LEFT.W16 = ((out_i & 0xFF00) >> 8) | ((out_i & 0xFF) << 8);
-
-		buffer[i].LEFT.W16 = (s16) out;
-		buffer[i].RIGHT.W16 = (s16) out;
+		/* Left channel */
+		buffer[i].LEFT.W16 = (s16) DDS_calculate_channel_out(phaseAccumulator_L, phaseIncrement_L, index_L);
+		/* Right channel */
+		buffer[i].RIGHT.W16 = (s16) DDS_calculate_channel_out(phaseAccumulator_R, phaseIncrement_R, index_R);
     }
 }
