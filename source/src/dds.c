@@ -47,12 +47,12 @@ void DDS_Init(void)
 	DDS_sine_init();
 }
 
-inline float DDS_calculate_channel_out(uint32_t * phaseAccumulator, uint32_t phaseIncrement, uint32_t index)
+inline float DDS_calculate_channel_out(uint32_t * phaseAccumulator, uint32_t phaseIncrement)
 {
 	/* Increment the phase accumulator */
 	*phaseAccumulator += phaseIncrement;
 	*phaseAccumulator &= TABLE_SIZE*(1<<16) - 1;
-	index = *phaseAccumulator >> 16;
+	const uint32_t index = *phaseAccumulator >> 16;
 
 	/* interpolation */
 	float v1 = sine[index];
@@ -73,9 +73,6 @@ void DDS_calculate(dmabuf_t * buffer, uint16_t buffer_size,
 					uint32_t * phaseAccumulator_L, float frequency_L,
 					uint32_t * phaseAccumulator_R, float frequency_R)
 {
-	uint32_t index_L = 0;
-	uint32_t index_R = 0;
-
 	uint32_t phaseIncrement_L = Q16((float)frequency_L*TABLE_SIZE / SAMPLE_RATE);
 	uint32_t phaseIncrement_R = Q16((float)frequency_R*TABLE_SIZE / SAMPLE_RATE);
 	int i = 0;
@@ -83,8 +80,8 @@ void DDS_calculate(dmabuf_t * buffer, uint16_t buffer_size,
 	for(i=0; i<buffer_size; i++)
     {
 		/* Left channel */
-		buffer[i].LEFT.W16 = (s16) DDS_calculate_channel_out(phaseAccumulator_L, phaseIncrement_L, index_L);
+		buffer[i].LEFT.W16 = (s16) DDS_calculate_channel_out(phaseAccumulator_L, phaseIncrement_L);
 		/* Right channel */
-		buffer[i].RIGHT.W16 = (s16) DDS_calculate_channel_out(phaseAccumulator_R, phaseIncrement_R, index_R);
+		buffer[i].RIGHT.W16 = (s16) DDS_calculate_channel_out(phaseAccumulator_R, phaseIncrement_R);
     }
 }
